@@ -4,7 +4,7 @@ from datetime import datetime
 import time
 import os
 
-#VERSÃO 0.1
+# VERSÃO 0.2 (CORRIGIDA)
 # ==============================================================================
 # 1. CONFIGURAÇÃO INICIAL E CSS (VISUAL)
 # ==============================================================================
@@ -148,29 +148,25 @@ if not st.session_state['logado']:
     # --- TELA 1: LOGIN ---
 
     # 1. LOGO NO CANTO SUPERIOR DIREITO
-    # Cria colunas para o cabeçalho: Esquerda (Vazia) e Direita (Logo)
-    # [8, 2] significa: 80% vazio na esquerda, 20% para logo na direita
     col_vazia, col_logo = st.columns([8, 2])
     
     with col_logo:
-        # Verifica se a imagem existe para não dar erro vermelho na tela
+        # Verifica se a imagem existe (Case Sensitive no Linux do servidor!)
         if os.path.exists("logo.png"):
-            st.image("logo.png", width=150) # Ajuste a largura conforme necessário
+            st.image("logo.png", width=150) 
+        elif os.path.exists("Logo.png"): # Tenta com maiúscula por garantia
+            st.image("Logo.png", width=150)
         else:
-            # Texto temporário caso não tenha a imagem ainda
             st.write("📍 Logo aqui") 
 
     # Espaçamento vertical
     st.markdown("<br>", unsafe_allow_html=True)
     
     # 2. FORMULÁRIO CENTRALIZADO
-    # MUDANÇA AQUI: Alterei [1, 1.5, 1] para [1, 3, 1].
-    # O "3" no meio dá muito mais espaço para o título caber numa linha só.
     col_esq, col_centro, col_dir = st.columns([1, 3, 1])
     
     with col_centro:
         # TÍTULO FORÇADO EM UMA LINHA
-        # O estilo 'white-space: nowrap' obriga o texto a não quebrar
         st.markdown("""
             <h1 style='text-align: center; white-space: nowrap; font-size: 2.5rem;'>
                 📊 PAINEL COMERCIAL | CIG 360°
@@ -183,7 +179,6 @@ if not st.session_state['logado']:
             email_input = st.text_input("E-mail")
             senha_input = st.text_input("Senha", type="password")
             
-            # Botão ocupando largura total da coluna central
             btn_entrar = st.form_submit_button("Acessar Painel", use_container_width=True)
             
             if btn_entrar:
@@ -192,6 +187,7 @@ if not st.session_state['logado']:
                     # Sucesso
                     st.session_state['logado'] = True
                     st.session_state['user_data'] = user
+                    
                     # Registrar log
                     idx, t_inicio = registrar_entrada(user.get('nome', 'Desconhecido'), user['email'])
                     st.session_state['log_index'] = idx
@@ -209,7 +205,6 @@ else:
     link_bi = dados_usuario.get('link', '')
 
     # --- BARRA LATERAL (SIDEBAR) ---
-    # Colocamos o botão de sair e as infos na lateral para limpar a visão principal
     with st.sidebar:
         st.header("Menu")
         st.markdown(f"👤 **Usuário:** {dados_usuario.get('nome', 'Visitante')}")
@@ -228,6 +223,7 @@ else:
         st.warning("⚠️ Nenhum painel vinculado a este usuário.")
     else:
         # Renderização do Power BI ocupando toda a altura disponível (95vh)
+        # CORREÇÃO AQUI: Mudado de 605vh para 95vh
         html_powerbi = f"""
             <iframe 
                 title="Dashboard Corporativo" 
