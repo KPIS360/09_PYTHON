@@ -39,10 +39,15 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# 2. CONSTANTES
+# 2. CONSTANTES E CAMINHOS (CORRIGIDO PARA NUVEM)
 # ==============================================================================
-ARQUIVO_USUARIOS = 'usuarios.xlsx'
-ARQUIVO_LOGS = 'logs_acesso.xlsx'
+# Descobre a pasta onde o app.py está, seja no PC ou na Nuvem
+PASTA_ATUAL = os.path.dirname(os.path.abspath(__file__))
+
+# Monta o caminho completo dos arquivos
+ARQUIVO_USUARIOS = os.path.join(PASTA_ATUAL, 'usuarios.xlsx')
+ARQUIVO_LOGS = os.path.join(PASTA_ATUAL, 'logs_acesso.xlsx')
+CAMINHO_LOGO = os.path.join(PASTA_ATUAL, 'logo.png')
 
 # ==============================================================================
 # 3. FUNÇÕES DE BACKEND (LÓGICA E DADOS)
@@ -151,11 +156,9 @@ if not st.session_state['logado']:
     col_vazia, col_logo = st.columns([8, 2])
     
     with col_logo:
-        # Verifica se a imagem existe (Case Sensitive no Linux do servidor!)
-        if os.path.exists("logo.png"):
-            st.image("logo.png", width=150) 
-        elif os.path.exists("Logo.png"): # Tenta com maiúscula por garantia
-            st.image("Logo.png", width=150)
+        # Verifica se a imagem existe usando o caminho absoluto
+        if os.path.exists(CAMINHO_LOGO):
+            st.image(CAMINHO_LOGO, width=150) 
         else:
             st.write("📍 Logo aqui") 
 
